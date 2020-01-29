@@ -1,41 +1,62 @@
 //structure contains information about each specific key
 
-var grid = [['A', 'B', 'C', 'D'], ['E', 'F', 'G', 'H'], ['I', 'J', 'K', 'L'], ['A', 'B', 'C', 'D']];
-var dictionary = ['ABEF', 'AFJIEB', 'DGKD', 'DGKA'];
-var finaldictionary = [];
+// var grid = [['A', 'B', 'C', 'D'], ['E', 'F', 'G', 'H'], ['I', 'J', 'K', 'L'], ['A', 'B', 'C', 'D']];
+// var dictionary = ['ABEF','AFJIEB', 'DGKD', 'DGKA'];
+// var finaldictionary = [];
 
 function findallsolutions(grid, dictionary)
 {
+	window.grid = grid;
+	window.finaldictionary = [];
 	dictionary.forEach(lettersplitter);
 	console.log('Final Dictionary'); 
 	console.log(finaldictionary)
+	return(finaldictionary);
 } 
 
+//split letters one by one
+//TODO account for Qu letters 
 function lettersplitter(value)
 {
+	//split words in the dictionary
 	var arr = value.split('');
+
+	//turning the grid into a 1D array 
 	var board = [].concat(...grid);
+	//finding the width of the grid 
 	var gridwidth = Object.keys(grid).length;
 	var times = arr.length;
-	storedindexes = {};
-	var found = null; 
+	var storedindexes = {};
+	var wholeword = [];
+	var found = null;
+	if(arr.length < 3)
+	{
+		found = false; 
+	} 
 	for(let i = 0; i < arr.length; i++)
 	{
-		if(i  noin storedindexes)
-		{
-			storedindexes[i] = []
-		}
-		else
-		{
-
-		}
-		var returned = boardsearch(board, arr[i], times, storedindexes, gridwidth, arr);
-		storedindexes = returned[1];
+		var returned = boardsearch(board, arr[i], times, arr, storedindexes);
 		if(returned[0] === false) {
 			found = false;
 			break;
 		}
 		times--; 
+	}
+	console.log(storedindexes);
+	for(let m = 0 ; m < arr.length; m++)
+	{
+		for(var key in storedindexes)
+		{
+			if(arr[m] === storedindexes[key])
+			{
+				wholeword.push(parseInt(key));
+				break;
+			}
+		}
+	}
+	var returned1 = boardsearchadjacent(board, gridwidth, wholeword, arr); 
+	if(returned1 === false){
+		found = false;
 	}
 	if(found !== false)
 	{
@@ -44,89 +65,66 @@ function lettersplitter(value)
 	}
 }
 
-function boardsearch(board, charat, times, previndexes, length, arr)
+function boardsearch(board, charat, times, arr, storedindexes)
 {
 	var foundletter;
 	if(times > 0)
 	{
-		//Searches for the first letter in the list
-		if(times === arr.length)
+		for(let j = 0; j < board.length; j++)
 		{
-			for(let j = 0; j < board.length; j++)
+			if(charat === board[j])
 			{
-				if(charat === board[j])
-				{
-					foundletter = true;
-					console.log('first letter found at ' + j);
-					storedindexes.push(j);
-				}
-				else if(storedindexes === null)
-				{
-					console.log('first letter not found');
-					console.log(charat);
-					foundletter = false;
-					console.log(arr); 
-				}
-			}	
-			return [foundletter, storedindexes];
-		}
-		else
-		{
-			var returned1 = boardsearchadjacent(charat, board, previndexes, length);
-			if(returned1[0] === true)
-			{
-				foundletter = returned1[0];
-				storedindexes.push(returned1[1]);
-				console.log('stored index ' + storedindexes);
+				storedindexes[j] = charat;
+				//wholeword.push(j);
 			}
-			else if(returned1[0] === false)
+			else if(storedindexes === null)
 			{
-				console.log('triggered character');
+				console.log('letter not found');
 				console.log(charat);
-				console.log('word to be removed');
-				console.log(arr);
 				foundletter = false;
-			}		
-		}
-		return [foundletter, storedindexes]; 
+				console.log(arr); 
+			}
+		}	
+		return [foundletter, storedindexes];
 	}
 }
 
-
-function boardsearchadjacent(charat, board, previndexes, length)
+function boardsearchadjacent(board, length, wholeword, arr)
 {
-	for(let k = 0; k < previndexes.length; k++)
+	for(let l = 0; l < wholeword.length - 1; l++)
 	{
-		var topleft = (previndexes[k]-length-1 > 0 || previndexes[k]-length-1 < board.length) ? previndexes[k]-length-1:null;
-		var top = (previndexes[k]-length > 0 || previndexes[k]-length < board.length) ? previndexes[k]-length:null;
-		var topright = (previndexes[k]-length+1 > 0 || previndexes[k]-length+1 < board.length) ? previndexes[k]-length+1:null;
-		var middleleft = (previndexes[k]-1 > 0 || previndexes[k]-1 < board.length) ? previndexes[k]-1:null;
-		var middleright = (previndexes[k]+1 > 0 || previndexes[k]+1 < board.length) ? previndexes[k]+1:null;
-		var bottomleft = (previndexes[k]+length-1 > 0 || previndexes[k]+length-1 < board.length) ? previndexes[k]+length-1:null;
-		var bottom = (previndexes[k]+length > 0 || previndexes[k]+length < board.length) ? previndexes[k]+length:null;
-		var bottomright = (previndexes[k]+length+1 > 0 || previndexes[k]+length+1 < board.length) ? previndexes[k]+length+1:null;
+		var topleft = (wholeword[l]-length-1 > 0 && wholeword[l]-length-1 < board.length) ? wholeword[l]-length-1:null;
+		var top = (wholeword[l]-length > 0 && wholeword[l]-length < board.length) ? wholeword[l]-length:null;
+		var topright = (wholeword[l]-length+1 > 0 && wholeword[l]-length+1 < board.length) ? wholeword[l]-length+1:null;
+		var middleleft = (wholeword[l]-1 > 0 && wholeword[l]-1 < board.length) ? wholeword[l]-1:null;
+		var middleright = (wholeword[l]+1 > 0 && wholeword[l]+1 < board.length) ? wholeword[l]+1:null;
+		var bottomleft = (wholeword[l]+length-1 > 0 && wholeword[l]+length-1 < board.length) ? wholeword[l]+length-1:null;
+		var bottom = (wholeword[l]+length > 0 && wholeword[l]+length < board.length) ? wholeword[l]+length:null;
+		var bottomright = (wholeword[l]+length+1 > 0 && wholeword[l]+length+1 < board.length) ? wholeword[l]+length+1:null;
 	
-		switch(charat)
+		switch(arr[l+1])
 		{
 			case board[topleft]:
-				return [true, topleft];
+				break;
 			case board[top]:
-				return [true, top];
+				break;
 			case board[topright]:
-				return [true, topright];
+				break;
 			case board[middleleft]:
-				return [true, middleleft];
+				break;
 			case board[middleright]:
-				return [true, middleright];
+				break;
 			case board[bottomleft]:
-				return [true, bottomleft];
+				break;
 			case board[bottom]:
-				return [true, bottom];
+				break;
 			case board[bottomright]:
-				return [true, bottomleft];
+				break;
+			default:
+				return false;
 		}
 	}
-	return[false, null]
+	return true;
 }
 
-findallsolutions(grid, dictionary);
+module.exports = findallsolutions;

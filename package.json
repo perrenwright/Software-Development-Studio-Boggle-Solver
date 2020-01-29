@@ -1,0 +1,23 @@
+{
+  "name": "boogle_solver",
+  "version": "1.0.0",
+  "description": "a software project",
+  "main": "boggle_solver.js",
+  "dependencies": {
+    "jest": "^25.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perrenwright/Software-Development-Studio-Boggle-Solver.git"
+  },
+  "author": "Perren Wright",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/perrenwright/Software-Development-Studio-Boggle-Solver/issues"
+  },
+  "homepage": "https://github.com/perrenwright/Software-Development-Studio-Boggle-Solver#readme"
+}
